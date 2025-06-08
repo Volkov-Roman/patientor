@@ -3,8 +3,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Patient } from "../types";
 import { apiBaseUrl } from "../constants";
+import { Diagnosis } from "../types";
 
-const PatientPage = () => {
+interface Props {
+  diagnoses: Diagnosis[];
+}
+
+const PatientPage = ({ diagnoses }: Props) => {
   const { id } = useParams();
   const [patient, setPatient] = useState<Patient | null>(null);
 
@@ -31,9 +36,14 @@ const PatientPage = () => {
             <p><b>{entry.date}</b> {entry.description}</p>
             {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 && (
               <ul>
-                {entry.diagnosisCodes.map(code => (
-                  <li key={code}>{code}</li>
-                ))}
+                {entry.diagnosisCodes.map(code => {
+                  const diagnosis = diagnoses.find(d => d.code === code);
+                  return (
+                    <li key={code}>
+                      {code} {diagnosis?.name}
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </li>
