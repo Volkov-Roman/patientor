@@ -4,6 +4,7 @@ import axios from "axios";
 import { Patient } from "../types";
 import { apiBaseUrl } from "../constants";
 import { Diagnosis } from "../types";
+import EntryDetails from "./EntryDetails";
 
 interface Props {
   diagnoses: Diagnosis[];
@@ -29,26 +30,11 @@ const PatientPage = ({ diagnoses }: Props) => {
       <p>ssn: {patient.ssn}</p>
       <p>occupation: {patient.occupation}</p>
       <p>date of birth: {patient.dateOfBirth}</p>
+    
       <h3>Entries</h3>
-      <ul>
-        {patient.entries.map(entry => (
-          <li key={entry.id}>
-            <p><b>{entry.date}</b> {entry.description}</p>
-            {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 && (
-              <ul>
-                {entry.diagnosisCodes.map(code => {
-                  const diagnosis = diagnoses.find(d => d.code === code);
-                  return (
-                    <li key={code}>
-                      {code} {diagnosis?.name}
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </li>
-        ))}
-      </ul>
+      {patient.entries.map(entry => (
+        <EntryDetails key={entry.id} entry={entry} diagnoses={diagnoses} />
+      ))}
     </div>
   );
 };
