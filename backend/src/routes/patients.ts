@@ -3,7 +3,7 @@ import { Response } from 'express';
 import { z } from 'zod';
 import { NonSensitivePatient } from "../types";
 import patientService from '../services/patientService';
-import toNewPatientEntry from '../utils';
+import toNewPatientEntry, { toNewEntry } from '../utils';
 
 const router = express.Router();
 
@@ -34,6 +34,21 @@ router.post('/', (_req, res) => {
     } else {
       res.status(400).send({ error: 'unknown error' });
     }
+  }
+});
+
+router.post('/:id/entries', (req, res) => {
+  try {
+    const id = req.params.id;
+    const newEntry = toNewEntry(req.body);
+    const updatedPatient = patientService.addEntry(id, newEntry);
+    res.json(updatedPatient);
+  } catch (error: unknown) {
+      let message = "Invalid entry data";
+      if (error instanceof Error) {
+        message += `: ${error.message}`;
+      }
+      res.status(400).send({ error: message });
   }
 });
 
