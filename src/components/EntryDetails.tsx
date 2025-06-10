@@ -14,6 +14,9 @@ const EntryDetails: React.FC<{ entry: Entry; diagnoses: Diagnosis[] }> = ({ entr
           </Typography>
           <Typography>{entry.description}</Typography>
           <Typography variant="body2">diagnose by {entry.specialist}</Typography>
+          <Typography variant="body2">
+            Discharged on {entry.discharge.date}: {entry.discharge.criteria}
+          </Typography>
           {entry.diagnosisCodes?.map(code => {
             const diagnosis = diagnoses.find(d => d.code === code);
             return (
@@ -32,6 +35,11 @@ const EntryDetails: React.FC<{ entry: Entry; diagnoses: Diagnosis[] }> = ({ entr
           </Typography>
           <Typography>{entry.description}</Typography>
           <Typography variant="body2">diagnose by {entry.specialist}</Typography>
+          {entry.sickLeave && (
+            <Typography variant="body2">
+              Sick leave: {entry.sickLeave.startDate} – {entry.sickLeave.endDate}
+            </Typography>
+          )}
           {entry.diagnosisCodes?.map(code => {
             const diagnosis = diagnoses.find(d => d.code === code);
             return (

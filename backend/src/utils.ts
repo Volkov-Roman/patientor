@@ -77,7 +77,19 @@ export const toNewEntry = (object: unknown): EntryWithoutId => {
   const entry = object as { type: string };
 
   switch (entry.type) {
-    case "Hospital":
+    case "Hospital": {
+      const dischargeRaw = (object as Record<string, unknown>).discharge;
+          
+      if (
+        !dischargeRaw ||
+        typeof dischargeRaw !== "object" ||
+        dischargeRaw === null
+      ) {
+        throw new Error("Missing or invalid discharge");
+      }
+      
+      const discharge = dischargeRaw as Record<string, unknown>;
+    
       return {
         type: "Hospital",
         description: getString(object, "description"),
@@ -85,10 +97,11 @@ export const toNewEntry = (object: unknown): EntryWithoutId => {
         specialist: getString(object, "specialist"),
         diagnosisCodes: parseDiagnosisCodes(object),
         discharge: {
-          date: getString(object, "discharge.date"),
-          criteria: getString(object, "discharge.criteria"),
+          date: getString(discharge, "date"),
+          criteria: getString(discharge, "criteria"),
         }
       };
+    }
     case "OccupationalHealthcare": {
       const startDate = getOptionalString(object, "sickLeave.startDate");
       const endDate = getOptionalString(object, "sickLeave.endDate");
