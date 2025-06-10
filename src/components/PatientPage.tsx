@@ -53,6 +53,7 @@ const PatientPage = ({ diagnoses }: Props) => {
         onSubmit={submitNewEntry}
         onCancel={() => {}}
         error={error ?? undefined}
+        diagnoses={diagnoses}
       />
 
       <h3>Entries</h3>

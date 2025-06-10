@@ -6,21 +6,26 @@ import {
   Typography,
   MenuItem,
   Select,
-  InputLabel
+  InputLabel,
+  OutlinedInput,
+  Checkbox,
+  ListItemText
 } from "@mui/material";
-import { EntryWithoutId, HealthCheckRating } from "../types";
+import { Diagnosis, EntryWithoutId, HealthCheckRating } from "../types";
 
 interface Props {
   onSubmit: (entry: EntryWithoutId) => void;
   onCancel: () => void;
   error?: string;
+  diagnoses: Diagnosis[];
 }
 
-const AddEntryForm = ({ onSubmit, onCancel, error }: Props) => {
+const AddEntryForm = ({ onSubmit, onCancel, error, diagnoses }: Props) => {
   const [type, setType] = useState<"HealthCheck" | "Hospital" | "OccupationalHealthcare">("HealthCheck");
   
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
+  const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
   const [specialist, setSpecialist] = useState("");
   
   // health check
@@ -45,7 +50,8 @@ const AddEntryForm = ({ onSubmit, onCancel, error }: Props) => {
         description,
         date,
         specialist,
-        healthCheckRating: healthCheckRating as HealthCheckRating
+        healthCheckRating: healthCheckRating as HealthCheckRating,
+        diagnosisCodes: diagnosisCodes
       });
     } else if (type === "Hospital") {
       onSubmit({
@@ -56,7 +62,8 @@ const AddEntryForm = ({ onSubmit, onCancel, error }: Props) => {
         discharge: {
           date: dischargeDate,
           criteria: dischargeCriteria
-        }
+        },
+        diagnosisCodes: diagnosisCodes
       });
     } else if (type === "OccupationalHealthcare") {
       const entry: EntryWithoutId = {
@@ -64,7 +71,8 @@ const AddEntryForm = ({ onSubmit, onCancel, error }: Props) => {
         description,
         date,
         specialist,
-        employerName
+        employerName,
+        diagnosisCodes: diagnosisCodes
       };
       if (sickLeaveStart && sickLeaveEnd) {
         entry.sickLeave = {
@@ -95,6 +103,29 @@ const AddEntryForm = ({ onSubmit, onCancel, error }: Props) => {
       <TextField label="Description" fullWidth value={description} onChange={({ target }) => setDescription(target.value)} sx={{ mt: 2 }} />
       <TextField label="Date" type="date" fullWidth value={date} onChange={({ target }) => setDate(target.value)} InputLabelProps={{ shrink: true }} />
       <TextField label="Specialist" fullWidth value={specialist} onChange={({ target }) => setSpecialist(target.value)} />
+      
+      <InputLabel id="diagnosis-code-label" sx={{ mt: 2 }}>
+        Diagnosis Codes
+      </InputLabel>
+      <Select
+        labelId="diagnosis-code-label"
+        multiple
+        fullWidth
+        value={diagnosisCodes}
+        onChange={({ target }) => {
+          const value = target.value;
+          setDiagnosisCodes(typeof value === "string" ? value.split(",") : value);
+        }}
+        input={<OutlinedInput label="Diagnosis Codes" />}
+        renderValue={(selected) => selected.join(", ")}
+      >
+        {diagnoses.map((d) => (
+          <MenuItem key={d.code} value={d.code}>
+            <Checkbox checked={diagnosisCodes.includes(d.code)} />
+            <ListItemText primary={`${d.code} — ${d.name}`} />
+          </MenuItem>
+        ))}
+      </Select>
 
       {type === "HealthCheck" && (
         <TextField
